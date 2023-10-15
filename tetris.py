@@ -361,7 +361,7 @@ class Game():
 		for i in range(20):
 			self.board.append([0,0,0,0,0,0,0,0,0,0])
 		self.score = 0
-		self.level = 5
+		self.level = 1
 		self.levelprogression = 0
 		self.gameend = False
 		self.pause = False
@@ -615,9 +615,8 @@ class Game():
 
 							
 							self.currentpiece = None	
-				if self.currentpiece:
-					m.erase()
-					self.update_screen()
+				m.erase()
+				self.update_screen()
 
 					
 
