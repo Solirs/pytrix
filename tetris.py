@@ -135,7 +135,8 @@ class Line(Piece):
 		
 		self.coords = [(y, x), (y, x-2), (y, x-1), (y, x+1)]
 		for a,b in self.coords:
-			if check_oob(b,a,board) or (brd[a][b] != 0 and (a,b) not in crds):
+			if check_oob(b,a,board) or (brd[a][b] > 0 and (a,b) not in crds):
+				sys.exit()
 				self.coords = crds
 				return brd
 		board[y][x] = self.colour
@@ -159,7 +160,7 @@ class Line(Piece):
 			
 			if self.form == 0:
 			
-				if check_oob(x,y+2,board):
+				if check_oob(x,y-1,board):
 					return brd
 				board[y - 1][x] = self.colour
 				board[y + 1][x] = self.colour
