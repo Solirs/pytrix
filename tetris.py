@@ -361,7 +361,7 @@ class Game():
 		for i in range(20):
 			self.board.append([0,0,0,0,0,0,0,0,0,0])
 		self.score = 0
-		self.level = 1
+		self.level = 3
 		self.levelprogression = 0
 		self.gameend = False
 		self.pause = False
@@ -433,7 +433,6 @@ class Game():
 			line+= 1
 		
 			
-		self.screen.refresh()								
 		self.screen.addstr(6, maxx//2+15, f"Score: {self.score}")
 		self.screen.addstr(7, maxx//2+15, f"Level: {self.level}")		
 		self.screen.addstr(8, maxx//2+15, f"Next: ")
@@ -454,13 +453,16 @@ class Game():
 				
 
 
+		self.screen.redrawln(9, 4)
+
 		for i in range(len(renderboard)):
 			ps = 0
 			for j in range(len(renderboard[0])):
+				
 				if renderboard[i][j] > 0:					
 					self.screen.addstr(9 + i, maxx//2+15 + j + ps, u'\u3042'.encode('utf-8'), curses.color_pair(renderboard[i][j]))
 				else:
-					self.screen.addstr(9 + i, maxx//2+15 + j+ps+1, "  ")
+					self.screen.addstr(9 + i, maxx//2+15 + j+ps+2, "  ")
 					ps += 1
 						
 						
@@ -471,8 +473,8 @@ class Game():
 			self.screen.addstr(10, maxx//2-10+6, "[PAUSED]")
 			
 		self.screen.addstr(line,maxx//2-11+pos, "---------------------",  curses.color_pair(8))			
-			
 		self.screen.refresh()
+			
 		
 	
 	def bagnext(self):
@@ -512,7 +514,7 @@ class Game():
 		self.screen = m
 		
 		while not self.gameend:
-			time.sleep(0.05)
+			time.sleep(0.05/self.level)
 			if self.pause:
 				key = self.screen.getch()
 				if key == 27:
