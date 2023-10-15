@@ -175,6 +175,7 @@ class Line(Piece):
 				
 		
 			self.wipe(board, cords)
+			self.form = 1
 
 			
 			return board
@@ -295,7 +296,6 @@ class Z_piece(Piece):
 
 	def rotate(self, board, clock=1):
 		if self.form == 0:
-			self.form = 1
 			return super().rotate(board)
 		elif self.form == 1:
 			y,x = self.coords[0]
@@ -333,7 +333,6 @@ class S_piece(Piece):
 
 	def rotate(self, board, clock=1):
 		if self.form == 0:
-			self.form = 1
 			return super().rotate(board)
 		elif self.form == 1:
 			y,x = self.coords[0]
@@ -514,7 +513,7 @@ class Game():
 		self.screen = m
 		
 		while not self.gameend:
-			time.sleep(0.05/self.level)
+			time.sleep(0.05/(self.level/1.5))
 			if self.pause:
 				key = self.screen.getch()
 				if key == 27:
@@ -564,7 +563,7 @@ class Game():
 						
 				
 				elif key == curses.KEY_UP:
-					self.board = self.currentpiece.rotate(self.board)	
+					self.board = self.currentpiece.rotate(self.board, clock=1)	
 				elif key == 122:
 					# Z 
 					self.board = self.currentpiece.rotate(self.board, clock=-1)	
