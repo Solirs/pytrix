@@ -32,7 +32,7 @@ class Piece():
 		cords = list(self.coords)
 		board = list(board)
 		for y, x in cords:
-			if len(board) <= y+1 or (board[y+1][x] != 0 and (y+1,x) not in cords):
+			if len(board) <= y+1 or (board[y+1][x] > 0 and (y+1,x) not in cords):
 				return False
 			
 		for y,x in cords:
@@ -52,7 +52,7 @@ class Piece():
 		brd = list(board)
 		
 		for y,x in cords:
-			if len(board[0]) <= x+1 or (board[y][x+1] != 0 and (y,x+1) not in cords):
+			if len(board[0]) <= x+1 or (board[y][x+1] > 0 and (y,x+1) not in cords):
 				return False			
 		for y, x in cords:
 			
@@ -69,7 +69,7 @@ class Piece():
 		board = list(board)
 		
 		for y,x in cords:
-			if x <= 0 or (board[y][x-1] != 0 and (y,x-1) not in cords):
+			if x <= 0 or (board[y][x-1] > 0 and (y,x-1) not in cords):
 				return False	
 				
 		for y, x in cords:
@@ -349,7 +349,9 @@ class Game():
 		self.screen.nodelay(1)
 		self.screen.keypad(True)
 		
+		
 		self.piecelist = [J_tetromino, Line, T_tetromino, L_tetromino, Z_piece, S_piece, Square]
+		
 		self.bag = []
 		
 		self.nextpieces = []
@@ -400,8 +402,9 @@ class Game():
 		maxx= self.screen.getmaxyx()[1]
 		maxy= self.screen.getmaxyx()[0]
 		
-		self.screen.clear()
-		
+		for i in range(len("tetris.py")):
+			self.screen.addstr(0,i, "tetris.py"[i], curses.color_pair(i+10))
+			
 		
 		
 		for i in self.board:
@@ -428,17 +431,47 @@ class Game():
 			pos = 0
 			
 			line+= 1
-			
 		
+			
+		self.screen.refresh()								
 		self.screen.addstr(6, maxx//2+15, f"Score: {self.score}")
-		self.screen.addstr(7, maxx//2+15, f"Level: {self.level}")
+		self.screen.addstr(7, maxx//2+15, f"Level: {self.level}")		
+		self.screen.addstr(8, maxx//2+15, f"Next: ")
+			
+			
+		renderboard = []
+		for i in range(3):
+			renderboard.append([0,0,0,0])
+						
+						
+		if not self.bag:
+			self.bag = random.sample(self.piecelist, len(self.piecelist))
+						
+		piece=self.bag[-1]
+
+		if self.bag:
+			piece().spawn(2,1, renderboard)
+				
+
+
+		for i in range(len(renderboard)):
+			ps = 0
+			for j in range(len(renderboard[0])):
+				if renderboard[i][j] > 0:					
+					self.screen.addstr(9 + i, maxx//2+15 + j + ps, u'\u3042'.encode('utf-8'), curses.color_pair(renderboard[i][j]))
+				else:
+					self.screen.addstr(9 + i, maxx//2+15 + j+ps+1, "  ")
+					ps += 1
+						
+						
+					
+		
 		
 		if self.pause:
-			self.screen.addstr(12, maxx//2-10+6+1, "PAUSED")
+			self.screen.addstr(10, maxx//2-10+6, "[PAUSED]")
 			
 		self.screen.addstr(line,maxx//2-11+pos, "---------------------",  curses.color_pair(8))			
 			
-		
 		self.screen.refresh()
 		
 	
@@ -452,6 +485,8 @@ class Game():
 					
 					
 	def gameloop(self, m):
+
+		
 		curses.init_pair(1, curses.COLOR_CYAN, curses.COLOR_CYAN)		
 		curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_YELLOW)		
 		curses.init_pair(3, curses.COLOR_MAGENTA, curses.COLOR_MAGENTA)		
@@ -460,8 +495,22 @@ class Game():
 		curses.init_pair(6, curses.COLOR_GREEN, curses.COLOR_GREEN)		
 		curses.init_pair(7, curses.COLOR_WHITE, curses.COLOR_WHITE)		
 		curses.init_pair(8, curses.COLOR_WHITE, curses.COLOR_WHITE)
+		curses.init_pair(9, curses.COLOR_BLACK, curses.COLOR_BLACK)
 		
+		
+		# For title colours
+		curses.init_pair(10, curses.COLOR_CYAN, curses.COLOR_BLACK)		
+		curses.init_pair(11, curses.COLOR_YELLOW, curses.COLOR_BLACK)		
+		curses.init_pair(12, curses.COLOR_MAGENTA, curses.COLOR_BLACK)		
+		curses.init_pair(13, curses.COLOR_RED, curses.COLOR_BLACK)	
+		curses.init_pair(14, curses.COLOR_BLUE, curses.COLOR_BLACK)		
+		curses.init_pair(15, curses.COLOR_GREEN, curses.COLOR_BLACK)		
+		curses.init_pair(16, curses.COLOR_CYAN, curses.COLOR_BLACK)		
+		curses.init_pair(17, curses.COLOR_YELLOW, curses.COLOR_BLACK)	
+		curses.init_pair(18, curses.COLOR_MAGENTA, curses.COLOR_BLACK)		
+			
 		self.screen = m
+		
 		while not self.gameend:
 			time.sleep(0.05)
 			if self.pause:
@@ -483,12 +532,14 @@ class Game():
 			if not self.currentpiece:
 				c = self.check_game_status()
 				if not c:
+					self.quit()
 					return					
 				
 				piece = self.bagnext()()
 				self.board = piece.spawn(5, 0, self.board)
 				self.currentpiece = piece
-				self.update_screen()
+				self.tick = 0
+
 				
 				
 			else:
@@ -519,7 +570,6 @@ class Game():
 				elif key ==	27:
 					# Escape
 					self.pause = True
-					self.screen.refresh()
 				
 				elif key == 32:
 					# Space
@@ -545,11 +595,12 @@ class Game():
 						if notdone:
 							cords = copy.deepcopy(tempcords)
 					for y,x in cords:
-						self.board[y][x] = -1
+						if self.board[y][x] == 0:
+							self.board[y][x] = -1
 									
 
 					
-				if self.tick == 8 and self.currentpiece and not self.pause:
+				if self.tick == 6 and self.currentpiece and not self.pause:
 					res = self.currentpiece.down(self.board)
 					if res:
 						self.board = res
@@ -562,24 +613,34 @@ class Game():
 
 							
 							self.currentpiece = None	
-				self.update_screen()
+				if self.currentpiece:
+					m.erase()
+					self.update_screen()
 
 					
 
-			if self.tick == 8:
+			if self.tick == 6:
 				self.tick = 0
 				
 	def quit(self):
 		
-		curses.nocbreak()
-		self.screen.keypad(False)
-		curses.echo()		
-		curses.endwin()
+		pass
 
 
 if __name__ == "__main__":
 	os.environ.setdefault('ESCDELAY', '25')
 	
-	g = Game()
-	curses.wrapper(g.gameloop)
+	scr = curses.initscr()
+	curses.start_color()
+	curses.noecho()
+	curses.cbreak()
+	try:
+		scr.keypad(True)
+		g = Game()
+		g.gameloop(scr)
+	finally:
+		curses.nocbreak()
+		scr.keypad(False)
+		curses.echo()		
+		curses.endwin()	
 	print("You lost noob")
