@@ -405,6 +405,7 @@ class Game():
 		
 		
 		for i in self.board:
+
 			self.screen.addstr(line,maxx//2-11+pos, "|",  curses.color_pair(8))			
 			for x in i:
 				
@@ -413,8 +414,12 @@ class Game():
 					self.screen.addstr(line,maxx//2-10+pos+1, " ")
 					
 
+				elif x == -1:
+					self.screen.addstr(line,maxx//2-10+pos, "XX")
+					
 				else:
 					self.screen.addstr(line,maxx//2-10+pos, u'\u3042'.encode('utf-8'), curses.color_pair(x))
+					
 					
 				pos += 2
 					
@@ -469,6 +474,12 @@ class Game():
 			
 
 			key = 0
+			for i in range(len(self.board)):
+				for j in range(len(self.board[i])):
+					if self.board[i][j] == -1:
+						self.board[i][j] = 0						
+						
+			
 			if not self.currentpiece:
 				c = self.check_game_status()
 				if not c:
@@ -516,7 +527,26 @@ class Game():
 					while res:
 						res = self.currentpiece.down(res)
 						self.board = res if res else self.board
-					self.currentpiece = None					
+					self.currentpiece = None			
+					
+				if self.currentpiece:
+					# Ghost pieces
+					cords = copy.deepcopy(self.currentpiece.coords)
+					notdone = True
+					
+					while notdone:
+						tempcords = copy.deepcopy(cords)
+						
+						for y,x in cords:
+							if (check_oob(x,y+1,self.board) or self.board[y+1][x] != 0) and (y+1,x) not in cords:
+								notdone = False
+							else:
+								tempcords[tempcords.index((y,x))] = (y+1,x)
+						if notdone:
+							cords = copy.deepcopy(tempcords)
+					for y,x in cords:
+						self.board[y][x] = -1
+									
 
 					
 				if self.tick == 8 and self.currentpiece and not self.pause:
