@@ -357,7 +357,7 @@ class Game():
 		
 		self.currentpiece = None
 		self.board = []
-		for i in range(20):
+		for i in range(21):
 			self.board.append([0,0,0,0,0,0,0,0,0,0])
 		self.score = 0
 		self.level = 1
@@ -406,7 +406,7 @@ class Game():
 			
 		
 		
-		for i in self.board:
+		for i in self.board[1::]:
 
 			self.screen.addstr(line,maxx//2-11+pos, "|",  curses.color_pair(8))			
 			for x in i:
@@ -537,7 +537,7 @@ class Game():
 					return					
 				
 				piece = self.bagnext()()
-				self.board = piece.spawn(5, 0, self.board)
+				self.board = piece.spawn(5, 1, self.board)
 				self.currentpiece = piece
 				self.tick = 0
 
