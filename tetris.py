@@ -361,7 +361,7 @@ class Game():
 		for i in range(20):
 			self.board.append([0,0,0,0,0,0,0,0,0,0])
 		self.score = 0
-		self.level = 3
+		self.level = 5
 		self.levelprogression = 0
 		self.gameend = False
 		self.pause = False
@@ -453,7 +453,7 @@ class Game():
 				
 
 
-		self.screen.redrawln(9, 4)
+		self.screen.redrawln(9, 2)
 
 		for i in range(len(renderboard)):
 			ps = 0
@@ -472,7 +472,7 @@ class Game():
 		if self.pause:
 			self.screen.addstr(10, maxx//2-10+6, "[PAUSED]")
 			
-		self.screen.addstr(line,maxx//2-11+pos, "---------------------",  curses.color_pair(8))			
+		self.screen.addstr(line,maxx//2-11+pos, "----------------------",  curses.color_pair(8))			
 		self.screen.refresh()
 			
 		
@@ -632,7 +632,10 @@ class Game():
 if __name__ == "__main__":
 	os.environ.setdefault('ESCDELAY', '25')
 	
+	
 	scr = curses.initscr()
+	curses.curs_set(0)
+	
 	curses.start_color()
 	curses.noecho()
 	curses.cbreak()
