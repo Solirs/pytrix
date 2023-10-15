@@ -176,7 +176,6 @@ class Line(Piece):
 				
 		
 			self.wipe(board, cords)
-			self.form = 1
 
 			
 			return board
