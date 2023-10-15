@@ -81,7 +81,7 @@ class Piece():
 		
 		return board		
 		
-	def rotate(self, board):
+	def rotate(self, board, clock=1):
 
 		brd = copy.deepcopy(board)
 		y, x = self.coords[0]
@@ -92,18 +92,25 @@ class Piece():
 		
 		
 		for i, j in cords[1::]:
-			if check_oob(x+y-i, y+(j-x), board):
+			if clock == -1:
+				dstx = x+i-y
+				dsty = y+(x-j)
+			else:
+				dstx = x+y-i
+				dsty = y+j-x
+				
+			if check_oob(dstx, dsty, board):
 				self.coords = cords
 					
 				return brd
 			
-			if brd[y+(j-x)][x+y-i] != 0 and (y+(j-x),x+y-i) not in cords:
+			if brd[dsty][dstx] != 0 and (dsty,dstx) not in cords:
 				self.coords = cords
 					
 				return brd				
 				
-			board[y+(j-x)][x+y-i] = self.colour
-			self.coords.append((y+(j-x), x+y-i))			
+			board[dsty][dstx] = self.colour
+			self.coords.append((dsty, dstx))			
 	
 
 
@@ -141,7 +148,7 @@ class Line(Piece):
 		
 		return board
 		
-	def rotate(self, board):
+	def rotate(self, board, clock=1):
 			
 			
 			brd = copy.deepcopy(board)
@@ -192,7 +199,7 @@ class Square(Piece):
 
 		
 		return board
-	def rotate(self, board):
+	def rotate(self, board, clock=1):
 		return board
 		
 		
@@ -216,35 +223,7 @@ class T_tetromino(Piece):
 		
 		return board	
 
-	"""def rotate(self, board):
-		cords = list(self.coords)
-		
-		y, x = self.coords[0]
-		cords.pop(0)
-		
-		
-		if self.form == 0:
-			y,x = self.coords[3]
-			board[y-1][x-1] = 1
-			self.coords[3] = (y-1, x-1)
-		elif self.form == 1:
-			y,x = self.coords[2]
-			board[y-1][x+1] = 1
-			self.coords[2] = (y-1, x+1)
-		elif self.form == 2:
-			y,x = self.coords[1]
-			board[y+1][x+1] = 1
-			self.coords[1] = (y+1, x+1)
-		elif self.form == 3:
-			y,x = self.coords[0]
-			board = self.spawn(x,y, board)			
-			
-		self.wipe(board, cords)
-		self.form += 1
-		self.form %= 4
-		
-		return board
-"""
+
 
 class L_tetromino(Piece):
 	def __init__(self):
@@ -265,53 +244,6 @@ class L_tetromino(Piece):
 		
 		return board	
 
-	"""def rotate(self, board):
-		cords = list(self.coords)
-		
-		y, x = self.coords[0]
-		cords.pop(0)
-		
-		
-		if self.form == 0:
-			board[y+1][x] = 1
-			board[y+1][x-1] = 1
-			board[y-1][x] = 1
-			
-			
-			self.coords[1] = (y+1, x)
-			self.coords[2] = (y+1, x-1)
-			self.coords[3] = (y-1, x)
-			
-			
-		elif self.form == 1:
-			board[y-1][x-1] = 1
-			board[y-1][x] = 1
-			board[y+1][x] = 1
-			
-			
-			self.coords[1] = (y-1, x-1)
-			self.coords[2] = (y-1, x)
-			self.coords[3] = (y+1, x)
-			
-		elif self.form == 2:
-			board[y-1][x-1] = 1
-			board[y-1][x] = 1
-			board[y+1][x] = 1
-			
-			
-			self.coords[1] = (y-1, x-1)
-			self.coords[2] = (y-1, x)
-			self.coords[3] = (y+1, x)
-		elif self.form == 3:
-			y,x = self.coords[0]
-			board = self.spawn(x,y, board)			
-			
-		self.wipe(board, cords)
-		self.form += 1
-		self.form %= 4
-		
-		return board"""
-
 class J_tetromino(Piece):
 	def __init__(self):
 		super(J_tetromino, self).__init__()
@@ -330,56 +262,6 @@ class J_tetromino(Piece):
 
 		
 		return board	
-
-"""
-	def rotate(self, board):
-		cords = list(self.coords)
-		
-		y, x = self.coords[0]
-		cords.pop(0)
-		
-		
-		if self.form == 0:
-			board[y+1][x] = 1
-			board[y+1][x-1] = 1
-			board[y-1][x] = 1
-			
-			
-			self.coords[1] = (y+1, x)
-			self.coords[2] = (y+1, x-1)
-			self.coords[3] = (y-1, x)
-			
-			
-		elif self.form == 1:
-			board[y-1][x-1] = 1
-			board[y][x-1] = 1
-			board[y][x+1] = 1
-			
-			
-			self.coords[1] = (y-1, x-1)
-			self.coords[2] = (y, x-1)
-			self.coords[3] = (y, x+1)
-			
-		elif self.form == 2:
-			board[y-1][x-1] = 1
-			board[y-1][x] = 1
-			board[y+1][x] = 1
-			
-			
-			self.coords[1] = (y-1, x-1)
-			self.coords[2] = (y-1, x)
-			self.coords[3] = (y+1, x)
-		elif self.form == 3:
-			y,x = self.coords[0]
-			board = self.spawn(x,y, board)			
-			
-		self.wipe(board, cords)
-		self.form += 1
-		self.form %= 4
-		
-		return board
-		
-"""
 
 
 class Z_piece(Piece):
@@ -411,7 +293,7 @@ class Z_piece(Piece):
 		
 		return board	
 
-	def rotate(self, board):
+	def rotate(self, board, clock=1):
 		if self.form == 0:
 			self.form = 1
 			return super().rotate(board)
@@ -449,7 +331,7 @@ class S_piece(Piece):
 		
 		return board	
 
-	def rotate(self, board):
+	def rotate(self, board, clock=1):
 		if self.form == 0:
 			self.form = 1
 			return super().rotate(board)
@@ -478,7 +360,7 @@ class Game():
 			self.board.append([0,0,0,0,0,0,0,0,0,0])
 		self.score = 0
 		self.level = 1
-		
+		self.levelprogression = 0
 		self.gameend = False
 		self.pause = False
 		
@@ -496,10 +378,18 @@ class Game():
 			return False
 		
 		
+		
 		for i in self.board:
 			if self.is_row_full(i):
 				self.board.pop(self.board.index(i))
 				self.board.insert(0, [0,0,0,0,0,0,0,0,0,0])
+
+				self.levelprogression += 1
+				self.score += 40*self.level
+				if self.levelprogression == 10:
+					self.level += 1
+					self.levelprogression = 0
+									
 				
 		return True
 		
@@ -508,7 +398,10 @@ class Game():
 		line = 1
 		pos = 0
 		maxx= self.screen.getmaxyx()[1]
-		self.screen.clear();
+		maxy= self.screen.getmaxyx()[0]
+		
+		self.screen.clear()
+		
 		
 		
 		for i in self.board:
@@ -527,11 +420,16 @@ class Game():
 					
 				
 			self.screen.addstr(line,maxx//2-10+pos, "|\n", curses.color_pair(8))			
-			
 			pos = 0
 			
 			line+= 1
 			
+		
+		self.screen.addstr(6, maxx//2+15, f"Score: {self.score}")
+		self.screen.addstr(7, maxx//2+15, f"Level: {self.level}")
+		
+		if self.pause:
+			self.screen.addstr(12, maxx//2-10+6+1, "PAUSED")
 			
 		self.screen.addstr(line,maxx//2-11+pos, "---------------------",  curses.color_pair(8))			
 			
@@ -603,8 +501,23 @@ class Game():
 				
 				elif key == curses.KEY_UP:
 					self.board = self.currentpiece.rotate(self.board)	
+				elif key == 122:
+					# Z 
+					self.board = self.currentpiece.rotate(self.board, clock=-1)	
+										
 				elif key ==	27:
+					# Escape
 					self.pause = True
+					self.screen.refresh()
+				
+				elif key == 32:
+					# Space
+					res = self.currentpiece.down(self.board)
+					while res:
+						res = self.currentpiece.down(res)
+						self.board = res if res else self.board
+					self.currentpiece = None					
+
 					
 				if self.tick == 8 and self.currentpiece and not self.pause:
 					res = self.currentpiece.down(self.board)
@@ -620,6 +533,7 @@ class Game():
 							
 							self.currentpiece = None	
 				self.update_screen()
+
 					
 
 			if self.tick == 8:
