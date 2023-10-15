@@ -364,6 +364,7 @@ class Game():
 		self.levelprogression = 0
 		self.gameend = False
 		self.pause = False
+		self.lost = False
 		
 		
 	def is_row_full(self, row):
@@ -375,7 +376,8 @@ class Game():
 	
 	def check_game_status(self):
 		
-		if self.board[0][5] != 0:
+		if self.board[1][5] != 0:
+			self.lost = True
 			return False
 		
 		
@@ -578,7 +580,11 @@ class Game():
 					while res:
 						res = self.currentpiece.down(res)
 						self.board = res if res else self.board
-					self.currentpiece = None			
+					self.currentpiece = None		
+				elif key == 113:
+					# q
+					self.quit()
+					return	
 					
 				if self.currentpiece:
 					# Ghost pieces
@@ -637,13 +643,16 @@ if __name__ == "__main__":
 	curses.start_color()
 	curses.noecho()
 	curses.cbreak()
+	scr.keypad(True)
+	
+	g = Game()
+	
 	try:
-		scr.keypad(True)
-		g = Game()
 		g.gameloop(scr)
 	finally:
 		curses.nocbreak()
 		scr.keypad(False)
 		curses.echo()		
 		curses.endwin()	
-	print("You lost noob")
+	if g.lost:
+		print("You lost noob")
