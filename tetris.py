@@ -376,12 +376,6 @@ class Game():
 	
 	def check_game_status(self):
 		
-		if self.board[1][5] != 0:
-			self.lost = True
-			return False
-		
-		
-		
 		for i in self.board:
 			if self.is_row_full(i):
 				self.board.pop(self.board.index(i))
@@ -393,6 +387,9 @@ class Game():
 					self.level += 1
 					self.levelprogression = 0
 									
+		if self.board[1][5] > 0:
+			self.lost = True
+			return False									
 				
 		return True
 		
@@ -539,12 +536,17 @@ class Game():
 					return					
 				
 				piece = self.bagnext()()
-				self.board = piece.spawn(5, 1, self.board)
+				brd = copy.deepcopy(self.board)
+				board = piece.spawn(5, 1, self.board)
+				
+				if brd == self.board:
+					self.lost = True
+					self.quit()
+					return
+				
 				self.currentpiece = piece
 				self.tick = 0
 
-				
-				
 			else:
 				key = self.screen.getch()
 
