@@ -9,5 +9,6 @@ No dependencies, just run tetris.py and have fun.
 - Z: Rotate left
 - Down arrow key: Drop faster.
 - Space: Drop all the way down.
-- Q: Quit
+- Q: Quit.
+- Esc: Pause.
 
