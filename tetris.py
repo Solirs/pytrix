@@ -400,8 +400,8 @@ class Game():
 		maxx= self.screen.getmaxyx()[1]
 		maxy= self.screen.getmaxyx()[0]
 		
-		for i in range(len("tetris.py")):
-			self.screen.addstr(0,i, "tetris.py"[i], curses.color_pair(i+10))
+		for i in range(len("pytrix")):
+			self.screen.addstr(0,i, "pytrix"[i], curses.color_pair(i+10))
 			
 		
 		
